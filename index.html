@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>環境知識競賽大挑戰</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <img class="hero-image" src="assets/ecology-hero.png" alt="森林溪流旁有蕨類、菇類、昆蟲、鳥與蛙，呈現豐富生態系。">
+      <div class="hero-overlay">
+        <p class="eyebrow">環保自然生態競賽練習</p>
+        <h1 id="page-title">環境知識競賽大挑戰</h1>
+        <p class="hero-copy">參考環境知識競賽與環保題庫常見主題，整理成簡易、中度、超難度三階段練習。</p>
+        <button class="primary-action" id="startButton" type="button">開始挑戰</button>
+      </div>
+    </section>
+
+    <section class="quiz-panel" aria-live="polite">
+      <div class="difficulty-panel" aria-label="選擇難度">
+        <button class="difficulty-button active" type="button" data-level="easy">
+          <span>簡易</span>
+          <strong>20 題</strong>
+        </button>
+        <button class="difficulty-button" type="button" data-level="medium">
+          <span>中度難度</span>
+          <strong>20 題</strong>
+        </button>
+        <button class="difficulty-button" type="button" data-level="hard">
+          <span>超難度</span>
+          <strong>20 題</strong>
+        </button>
+      </div>
+
+      <div class="topbar">
+        <div>
+          <p class="label">目前進度</p>
+          <strong id="progressText">第 1 / 20 題</strong>
+        </div>
+        <div>
+          <p class="label">答對題數</p>
+          <strong id="scoreText">0 題</strong>
+        </div>
+      </div>
+
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <article class="question-card">
+        <div class="question-meta">
+          <p class="topic-tag" id="topicTag">森林</p>
+          <p class="level-tag" id="levelTag">簡易</p>
+        </div>
+        <h2 id="questionText"></h2>
+        <div class="choices" id="choices"></div>
+      </article>
+
+      <section class="feedback" id="feedback" hidden>
+        <p class="feedback-result" id="feedbackResult"></p>
+        <p class="feedback-explain" id="feedbackExplain"></p>
+      </section>
+
+      <div class="controls">
+        <button class="ghost-action" id="restartButton" type="button">重新開始</button>
+        <button class="primary-action" id="nextButton" type="button" disabled>下一題</button>
+      </div>
+
+      <p class="source-note">題目依環境知識競賽題庫、地方環保常識題庫與自然生態教育常見概念改寫整理。</p>
+    </section>
+
+    <section class="result-panel" id="resultPanel" hidden>
+      <p class="eyebrow">挑戰完成</p>
+      <h2 id="resultTitle"></h2>
+      <p id="resultMessage"></p>
+      <div class="result-stat">
+        <span id="finalScore"></span>
+        <span id="finalPercent"></span>
+      </div>
+      <button class="primary-action" id="tryAgainButton" type="button">再挑戰一次</button>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
