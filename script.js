@@ -563,7 +563,7 @@ function prepareQuestion(item) {
     text,
     isCorrect: index === answer
   }));
-  const preparedChoices = shuffleToggle.checked ? shuffle(choiceObjects) : choiceObjects;
+  const preparedChoices = shuffle(choiceObjects);
   return {
     ...item,
     choices,
@@ -575,7 +575,8 @@ function prepareQuestion(item) {
 
 function buildSessionQuestions() {
   const baseQuestions = getQuestions();
-  const ordered = shuffleToggle.checked ? shuffle(baseQuestions) : [...baseQuestions];
+  if (shuffleToggle) shuffleToggle.checked = true;
+  const ordered = shuffle(baseQuestions);
   sessionQuestions = ordered.map(prepareQuestion);
 }
 
