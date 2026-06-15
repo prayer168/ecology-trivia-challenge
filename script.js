@@ -433,19 +433,34 @@ const levelNames = {
   hard: "超難度"
 };
 
+const TIMER_SECONDS = 10 * 60;
+
 let currentLevel = "easy";
 let currentIndex = 0;
 let score = 0;
 let answered = false;
 let audioContext;
+let sessionQuestions = [];
+let answerLog = [];
+let wrongAnswers = [];
+let reviewPool = [];
+let isReviewMode = false;
+let timerId;
+let secondsLeft = 0;
 
 const startButton = document.querySelector("#startButton");
 const restartButton = document.querySelector("#restartButton");
 const tryAgainButton = document.querySelector("#tryAgainButton");
+const reviewWrongButton = document.querySelector("#reviewWrongButton");
+const resetWrongButton = document.querySelector("#resetWrongButton");
 const nextButton = document.querySelector("#nextButton");
 const difficultyButtons = document.querySelectorAll(".difficulty-button");
+const shuffleToggle = document.querySelector("#shuffleToggle");
+const timerToggle = document.querySelector("#timerToggle");
+const soundToggle = document.querySelector("#soundToggle");
 const progressText = document.querySelector("#progressText");
 const scoreText = document.querySelector("#scoreText");
+const timerText = document.querySelector("#timerText");
 const progressFill = document.querySelector("#progressFill");
 const topicTag = document.querySelector("#topicTag");
 const levelTag = document.querySelector("#levelTag");
@@ -459,13 +474,81 @@ const resultTitle = document.querySelector("#resultTitle");
 const resultMessage = document.querySelector("#resultMessage");
 const finalScore = document.querySelector("#finalScore");
 const finalPercent = document.querySelector("#finalPercent");
+const topicReport = document.querySelector("#topicReport");
+const wrongReview = document.querySelector("#wrongReview");
 const quizPanel = document.querySelector(".quiz-panel");
 
 function getQuestions() {
-  return questionSets[currentLevel];
+  return isReviewMode && reviewPool.length ? reviewPool : questionSets[currentLevel];
+}
+
+function shuffle(items) {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
+}
+
+function prepareQuestion(item) {
+  const choiceObjects = item.choices.map((text, index) => ({
+    text,
+    isCorrect: index === item.answer
+  }));
+  const preparedChoices = shuffleToggle.checked ? shuffle(choiceObjects) : choiceObjects;
+  return {
+    ...item,
+    preparedChoices,
+    correctText: item.choices[item.answer]
+  };
+}
+
+function buildSessionQuestions() {
+  const baseQuestions = getQuestions();
+  const ordered = shuffleToggle.checked ? shuffle(baseQuestions) : [...baseQuestions];
+  sessionQuestions = ordered.map(prepareQuestion);
+}
+
+function formatTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+function stopTimer() {
+  window.clearInterval(timerId);
+  timerId = undefined;
+}
+
+function updateTimerText() {
+  timerText.textContent = timerToggle.checked ? formatTime(secondsLeft) : "不限時";
+}
+
+function startTimer() {
+  stopTimer();
+  if (!timerToggle.checked) {
+    secondsLeft = 0;
+    updateTimerText();
+    return;
+  }
+
+  secondsLeft = isReviewMode
+    ? Math.max(60, reviewPool.length * 30)
+    : TIMER_SECONDS;
+  updateTimerText();
+  timerId = window.setInterval(() => {
+    secondsLeft -= 1;
+    updateTimerText();
+    if (secondsLeft <= 0) {
+      stopTimer();
+      showResult(true);
+    }
+  }, 1000);
 }
 
 function playTone(isCorrect) {
+  if (!soundToggle.checked) return;
   const AudioCtor = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtor) return;
   audioContext ||= new AudioCtor();
@@ -485,25 +568,24 @@ function playTone(isCorrect) {
 }
 
 function renderQuestion() {
-  const questions = getQuestions();
-  const item = questions[currentIndex];
+  const item = sessionQuestions[currentIndex];
   answered = false;
   nextButton.disabled = true;
   feedback.hidden = true;
   feedback.classList.remove("correct-feedback", "incorrect-feedback");
   topicTag.textContent = item.topic;
-  levelTag.textContent = levelNames[currentLevel];
+  levelTag.textContent = isReviewMode ? "錯題複習" : levelNames[currentLevel];
   questionText.textContent = item.question;
-  progressText.textContent = `第 ${currentIndex + 1} / ${questions.length} 題`;
+  progressText.textContent = `第 ${currentIndex + 1} / ${sessionQuestions.length} 題`;
   scoreText.textContent = `${score} 題`;
-  progressFill.style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
+  progressFill.style.width = `${((currentIndex + 1) / sessionQuestions.length) * 100}%`;
   choices.replaceChildren();
 
-  item.choices.forEach((choice, choiceIndex) => {
+  item.preparedChoices.forEach((choice, choiceIndex) => {
     const button = document.createElement("button");
     button.className = "choice-button";
     button.type = "button";
-    button.textContent = choice;
+    button.textContent = choice.text;
     button.addEventListener("click", () => selectAnswer(choiceIndex));
     choices.append(button);
   });
@@ -513,15 +595,34 @@ function selectAnswer(choiceIndex) {
   if (answered) return;
   answered = true;
 
-  const item = getQuestions()[currentIndex];
-  const isCorrect = choiceIndex === item.answer;
+  const item = sessionQuestions[currentIndex];
+  const selectedChoice = item.preparedChoices[choiceIndex];
+  const isCorrect = selectedChoice.isCorrect;
   if (isCorrect) score += 1;
 
   [...choices.children].forEach((button, index) => {
     button.disabled = true;
-    if (index === item.answer) button.classList.add("correct");
+    if (item.preparedChoices[index].isCorrect) button.classList.add("correct");
     if (index === choiceIndex && !isCorrect) button.classList.add("incorrect");
   });
+
+  answerLog.push({
+    topic: item.topic,
+    question: item.question,
+    selectedText: selectedChoice.text,
+    correctText: item.correctText,
+    explain: item.explain,
+    isCorrect
+  });
+  if (!isCorrect) {
+    wrongAnswers.push({
+      topic: item.topic,
+      question: item.question,
+      choices: item.choices,
+      answer: item.answer,
+      explain: item.explain
+    });
+  }
 
   scoreText.textContent = `${score} 題`;
   feedback.classList.add(isCorrect ? "correct-feedback" : "incorrect-feedback");
@@ -531,20 +632,78 @@ function selectAnswer(choiceIndex) {
   feedbackExplain.textContent = item.explain;
   feedback.hidden = false;
   nextButton.disabled = false;
-  nextButton.textContent = currentIndex === getQuestions().length - 1 ? "看結果" : "下一題";
+  nextButton.textContent = currentIndex === sessionQuestions.length - 1 ? "看結果" : "下一題";
   playTone(isCorrect);
   nextButton.focus();
 }
 
-function showResult() {
-  const questions = getQuestions();
-  const percent = Math.round((score / questions.length) * 100);
+function renderTopicReport() {
+  const topicStats = new Map();
+  answerLog.forEach((entry) => {
+    const current = topicStats.get(entry.topic) || { correct: 0, total: 0 };
+    current.total += 1;
+    if (entry.isCorrect) current.correct += 1;
+    topicStats.set(entry.topic, current);
+  });
+
+  if (!topicStats.size) {
+    topicReport.innerHTML = '<p class="empty-state">尚未作答，沒有可分析的主題表現。</p>';
+    return;
+  }
+
+  topicReport.replaceChildren();
+  [...topicStats.entries()]
+    .sort((a, b) => b[1].total - a[1].total || a[0].localeCompare(b[0], "zh-Hant"))
+    .forEach(([topic, stat]) => {
+      const row = document.createElement("div");
+      row.className = "topic-row";
+      const label = document.createElement("span");
+      const value = document.createElement("span");
+      label.textContent = topic;
+      value.textContent = `${stat.correct}/${stat.total}`;
+      row.append(label, value);
+      topicReport.append(row);
+    });
+}
+
+function renderWrongReview() {
+  reviewPool = wrongAnswers.map((item) => ({ ...item }));
+  reviewWrongButton.disabled = reviewPool.length === 0;
+  resetWrongButton.disabled = reviewPool.length === 0;
+
+  if (!wrongAnswers.length) {
+    wrongReview.innerHTML = '<p class="empty-state">太好了，這一輪沒有錯題！</p>';
+    return;
+  }
+
+  wrongReview.replaceChildren();
+  wrongAnswers.forEach((item, index) => {
+    const block = document.createElement("div");
+    block.className = "wrong-item";
+    const question = document.createElement("p");
+    const answer = document.createElement("p");
+    const explain = document.createElement("p");
+    question.textContent = `${index + 1}. ${item.question}`;
+    answer.innerHTML = `<strong>正解：</strong>${item.choices[item.answer]}`;
+    explain.textContent = item.explain;
+    block.append(question, answer, explain);
+    wrongReview.append(block);
+  });
+}
+
+function showResult(timeUp = false) {
+  stopTimer();
+  const total = sessionQuestions.length || getQuestions().length;
+  const percent = total ? Math.round((score / total) * 100) : 0;
   quizPanel.hidden = true;
   resultPanel.hidden = false;
-  finalScore.textContent = `${score} / ${questions.length} 題`;
+  finalScore.textContent = `${score} / ${total} 題`;
   finalPercent.textContent = `${percent}%`;
 
-  if (percent >= 90) {
+  if (timeUp) {
+    resultTitle.textContent = `${isReviewMode ? "錯題複習" : levelNames[currentLevel]}：時間到`;
+    resultMessage.textContent = "你已經完成一段高專注練習，很棒！先看看報告，再決定要重練錯題或挑戰下一輪。";
+  } else if (percent >= 90) {
     resultTitle.textContent = `${levelNames[currentLevel]}：環境知識高手`;
     resultMessage.textContent = "太精彩了！你不只記得答案，也很能掌握環境議題背後的原因。";
   } else if (percent >= 70) {
@@ -558,11 +717,13 @@ function showResult() {
     resultMessage.textContent = "願意挑戰就很棒！這些題目本來就混合生態與環保常識，再玩一次會越來越熟。";
   }
 
+  renderTopicReport();
+  renderWrongReview();
   resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function nextQuestion() {
-  if (currentIndex === getQuestions().length - 1) {
+  if (currentIndex === sessionQuestions.length - 1) {
     showResult();
     return;
   }
@@ -572,6 +733,7 @@ function nextQuestion() {
 
 function setLevel(level) {
   currentLevel = level;
+  isReviewMode = false;
   difficultyButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.level === level);
   });
@@ -581,11 +743,39 @@ function setLevel(level) {
 function restartQuiz(shouldScroll = true) {
   currentIndex = 0;
   score = 0;
+  answerLog = [];
+  wrongAnswers = [];
+  buildSessionQuestions();
+  startTimer();
   quizPanel.hidden = false;
   resultPanel.hidden = true;
   nextButton.textContent = "下一題";
   renderQuestion();
   if (shouldScroll) quizPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function startWrongReview() {
+  if (!reviewPool.length) return;
+  isReviewMode = true;
+  currentIndex = 0;
+  score = 0;
+  answerLog = [];
+  wrongAnswers = [];
+  buildSessionQuestions();
+  startTimer();
+  quizPanel.hidden = false;
+  resultPanel.hidden = true;
+  nextButton.textContent = "下一題";
+  renderQuestion();
+  quizPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function clearWrongReview() {
+  reviewPool = [];
+  wrongAnswers = [];
+  reviewWrongButton.disabled = true;
+  resetWrongButton.disabled = true;
+  wrongReview.innerHTML = '<p class="empty-state">錯題已清除，可以重新挑戰一輪。</p>';
 }
 
 startButton.addEventListener("click", () => {
@@ -598,6 +788,11 @@ difficultyButtons.forEach((button) => {
 
 restartButton.addEventListener("click", () => restartQuiz());
 tryAgainButton.addEventListener("click", () => restartQuiz());
+reviewWrongButton.addEventListener("click", startWrongReview);
+resetWrongButton.addEventListener("click", clearWrongReview);
 nextButton.addEventListener("click", nextQuestion);
+shuffleToggle.addEventListener("change", () => restartQuiz(false));
+timerToggle.addEventListener("change", () => restartQuiz(false));
 
+buildSessionQuestions();
 renderQuestion();

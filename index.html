@@ -34,6 +34,21 @@
         </button>
       </div>
 
+      <div class="mode-panel" aria-label="練習設定">
+        <label class="toggle-option">
+          <input id="shuffleToggle" type="checkbox" checked>
+          <span>隨機出題與選項洗牌</span>
+        </label>
+        <label class="toggle-option">
+          <input id="timerToggle" type="checkbox">
+          <span>計時模式</span>
+        </label>
+        <label class="toggle-option">
+          <input id="soundToggle" type="checkbox" checked>
+          <span>音效</span>
+        </label>
+      </div>
+
       <div class="topbar">
         <div>
           <p class="label">目前進度</p>
@@ -42,6 +57,10 @@
         <div>
           <p class="label">答對題數</p>
           <strong id="scoreText">0 題</strong>
+        </div>
+        <div>
+          <p class="label">剩餘時間</p>
+          <strong id="timerText">不限時</strong>
         </div>
       </div>
 
@@ -78,6 +97,20 @@
       <div class="result-stat">
         <span id="finalScore"></span>
         <span id="finalPercent"></span>
+      </div>
+      <div class="report-grid">
+        <section class="report-card">
+          <h3>主題表現</h3>
+          <div id="topicReport"></div>
+        </section>
+        <section class="report-card">
+          <h3>錯題複習</h3>
+          <div id="wrongReview"></div>
+        </section>
+      </div>
+      <div class="result-actions">
+        <button class="ghost-action" id="reviewWrongButton" type="button">只練錯題</button>
+        <button class="ghost-action" id="resetWrongButton" type="button">清除錯題</button>
       </div>
       <button class="primary-action" id="tryAgainButton" type="button">再挑戰一次</button>
     </section>
