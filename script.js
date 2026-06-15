@@ -433,6 +433,69 @@ const levelNames = {
   hard: "超難度"
 };
 
+const choiceUpgrades = new Map([
+  ["下列哪一種行為最符合垃圾減量？", { choices: ["自備水壺和餐具", "改買小包裝商品", "先丟掉再回收", "只把垃圾壓扁"], answer: 0 }],
+  ["下列哪一種屬於再生能源？", { choices: ["水力發電能源", "天然氣發電源", "高效率燃煤源", "石油提煉能源"], answer: 0 }],
+  ["AQI 是用來提醒大家哪一件事？", { choices: ["空氣品質狀況", "溫室氣體總量", "河川污染等級", "紫外線曝曬風險"], answer: 0 }],
+  ["洗菜時比較節水的方式是什麼？", { choices: ["用盆水集中清洗", "開小水流慢慢沖", "開大水流快速洗", "洗完水直接倒掉"], answer: 0 }],
+  ["保護生物多樣性最重要的基礎之一是什麼？", { choices: ["維持完整棲地", "集中圈養動物", "只栽種單一樹種", "移除常見昆蟲"], answer: 0 }],
+  ["日常生活中，哪一項通常能減少碳排放？", { choices: ["短程步行或騎車", "冷氣長開低溫", "常買全新物品", "夜間燈具全開"], answer: 0 }],
+  ["減少塑膠吸管使用，主要是為了降低哪一類問題？", { choices: ["一次性塑膠廢棄", "餐具清洗用水量", "紙容器回收壓力", "玻璃瓶回收成本"], answer: 0 }],
+  ["濕地常見的重要功能是什麼？", { choices: ["淨化水質與棲地", "加速河水消失", "阻止植物生長", "替代垃圾掩埋"], answer: 0 }],
+  ["森林裡的落葉最後常會變成什麼？", { choices: ["土壤養分來源", "植物直接種子", "新的樹皮組織", "地下水主要來源"], answer: 0 }],
+  ["環境教育最希望大家培養什麼能力？", { choices: ["理解問題並行動", "熟背口號即可", "只在考前複習", "避免討論環境"], answer: 0 }],
+  ["海洋垃圾可能造成什麼影響？", { choices: ["使海洋生物受害", "提升海水含氧量", "增加珊瑚生長速", "讓魚類免於覓食"], answer: 0 }],
+  ["離開教室時，哪個動作最節能？", { choices: ["關燈並關閉電器", "保留風扇運轉", "投影機待機整天", "充電器插滿插座"], answer: 0 }],
+  ["PM2.5 指的是哪一類污染物？", { choices: ["細懸浮微粒", "可見落塵顆粒", "二氧化碳濃度", "酸雨酸鹼數值"], answer: 0 }],
+  ["綠色消費比較重視什麼？", { choices: ["低污染與可回收", "包裝精美程度", "購買數量越多", "使用後立即丟"], answer: 0 }],
+  ["蜜蜂幫植物授粉，這代表生物之間可能有什麼關係？", { choices: ["互利共生關係", "單純掠食關係", "完全沒有關係", "一定互相傷害"], answer: 0 }],
+  ["保護河川最適合的行為是哪一項？", { choices: ["不倒油污入水溝", "廢油少量倒水槽", "垃圾集中丟河岸", "多用清潔劑沖洗"], answer: 0 }],
+  ["分解者在生態系中主要負責什麼？", { choices: ["分解有機物循環", "捕食高階消費者", "固定大氣中氮氣", "製造植物葉綠素"], answer: 0 }],
+  ["長時間暴露在高噪音環境，可能影響什麼？", { choices: ["聽力與身心健康", "空氣污染指標值", "水體溶氧濃度", "土壤有機質含量"], answer: 0 }],
+  ["環境倫理提醒我們應該如何看待自然？", { choices: ["尊重生命與環境", "視自然為無限資源", "只重視人類需求", "浪費資源也可以"], answer: 0 }],
+  ["校園種植原生植物，通常能幫助什麼？", { choices: ["在地生物覓食", "外來種快速擴散", "草坪維護更單一", "校園用水固定歸零"], answer: 0 }],
+  ["AQI 的計算概念通常是取各污染物副指標中的哪一個作為代表？", { choices: ["最高副指標值", "最低副指標值", "所有數值平均", "只看二氧化碳"], answer: 0 }],
+  ["珊瑚白化最常與哪個環境壓力直接相關？", { choices: ["海水溫度異常升高", "潮間帶遊客增加", "海面風速短期增強", "沙灘沉積物變細"], answer: 0 }],
+  ["大型開發案推動前進行環境影響評估，主要目的是什麼？", { choices: ["預防並減輕環境衝擊", "保證工程最快完工", "替代所有民眾意見", "只審查建築高度"], answer: 0 }],
+  ["地下水污染常被認為難處理，主要原因是什麼？", { choices: ["擴散隱蔽且整治費時", "地下水每天完全更新", "污染物會立刻蒸發", "地下水完全不會流動"], answer: 0 }],
+  ["若要判斷水體是否可能受到糞便污染，常用哪類指標？", { choices: ["大腸桿菌群指標", "水體透明度指標", "水溫日變化指標", "河岸植被覆蓋率"], answer: 0 }],
+  ["循環經濟和傳統「製造、使用、丟棄」模式最大的差異是什麼？", { choices: ["重視再利用與減廢", "鼓勵產品快速報廢", "增加一次性包裝量", "省略產品設計階段"], answer: 0 }],
+  ["外來入侵種可能造成的問題是什麼？", { choices: ["競爭原生種並改變生態", "一定提升全部物種數", "只會出現在室內環境", "到新環境就無法繁殖"], answer: 0 }],
+  ["湖泊或水庫出現藻類大量繁殖，常與哪種污染有關？", { choices: ["氮磷營養鹽過多", "水中懸浮砂量偏高", "水面漂流木增加", "岸邊遮蔭面積減少"], answer: 0 }],
+  ["環保標章通常強調產品具備哪些特性？", { choices: ["低污染且省資源", "包裝多且醒目", "只能使用一次", "價格一定最高"], answer: 0 }],
+  ["若地球完全沒有自然溫室效應，平均氣溫大致會如何？", { choices: ["比現在低很多", "比現在高很多", "只在夜晚變低", "接近現在平均值"], answer: 0 }],
+  ["海洋保護區的常見目的不包含哪一項？", { choices: ["保護棲地與物種", "促進魚類資源恢復", "維持海洋生態功能", "鼓勵任意捕撈稀有種"], answer: 3 }],
+  ["土壤受到重金屬污染後，為什麼可能影響人體健康？", { choices: ["可能進入作物食物鏈", "只影響土壤顏色", "會被雨水完全稀釋", "一定只停在表土層"], answer: 0 }],
+  ["選擇在地、當季食材，通常可以降低哪方面的環境負擔？", { choices: ["運輸冷藏能源消耗", "植物光合作用能力", "土壤自然形成速度", "白天夜晚交替現象"], answer: 0 }],
+  ["2050 淨零排放中的「淨零」較接近哪個概念？", { choices: ["排放與移除達平衡", "只計算工業排放", "全靠購買碳權即可", "只要求個人節電"], answer: 0 }],
+  ["環境荷爾蒙受到關注，是因為它可能干擾生物的哪個系統？", { choices: ["內分泌調節系統", "呼吸氣體交換系統", "骨骼支撐系統", "神經反射系統"], answer: 0 }],
+  ["設置生態廊道的主要目的通常是什麼？", { choices: ["連結棲地利於移動", "讓車流通行更快速", "把植物集中到一處", "阻止動物尋找食物"], answer: 0 }],
+  ["酸雨主要與哪些空氣污染物轉化有關？", { choices: ["硫氧化物與氮氧化物", "二氧化碳與甲烷", "臭氧與懸浮微粒", "花粉與揮發性氣體"], answer: 0 }],
+  ["廚餘分類回收的好處之一是什麼？", { choices: ["可堆肥或資源再利用", "增加一般垃圾含水率", "取代所有塑膠回收", "讓污水免於處理"], answer: 0 }],
+  ["污染者付費原則的精神是什麼？", { choices: ["污染者負防治責任", "由受害者付全部費用", "污染越多獎勵越高", "不必追究污染來源"], answer: 0 }],
+  ["保護瀕危物種時，只保護單一個體通常不夠，還需要重視什麼？", { choices: ["族群棲地與食物網", "只要名稱好聽即可", "把棲地改成停車場", "讓個體遠離所有同類"], answer: 0 }],
+  ["碳定價工具的核心目的較接近哪一項？", { choices: ["反映排碳外部成本", "獎勵無限制排放", "取消所有節能技術", "只統計每日氣溫"], answer: 0 }],
+  ["頂級掠食者消失後，植被也跟著改變，這種連鎖效應常稱為什麼？", { choices: ["營養級聯效應", "臭氧層破洞", "都市熱島現象", "光害反射作用"], answer: 0 }],
+  ["海洋吸收過多二氧化碳後，常見的化學影響是什麼？", { choices: ["海水酸化影響鈣化", "海水鹽度大幅歸零", "潮汐週期立即改變", "海水溶氧必定增加"], answer: 0 }],
+  ["持久性有機污染物容易造成高階消費者風險增加，主要和哪個現象有關？", { choices: ["生物放大作用", "水分蒸散作用", "月相週期變化", "岩漿冷卻過程"], answer: 0 }],
+  ["BOD 偏高通常代表水體可能有什麼狀況？", { choices: ["有機污染與耗氧上升", "水中完全沒有生物", "水溫必定低於零度", "不可能有任何污染"], answer: 0 }],
+  ["風險評估中的「暴露」概念，最接近下列哪一項？", { choices: ["接觸危害因子的程度", "污染物顏色的深淺", "法規章節的數量", "地圖比例尺大小"], answer: 0 }],
+  ["小族群保育常擔心近親繁殖，主要原因是什麼？", { choices: ["降低遺傳多樣性", "族群永遠不滅絕", "增加所有有利基因", "棲地面積自動變大"], answer: 0 }],
+  ["環境影響評估中的替代方案分析，最主要的價值是什麼？", { choices: ["比較方案降低衝擊", "免除開發資料提供", "只增加文件頁數", "避免討論環境議題"], answer: 0 }],
+  ["臭氧在平流層和對流層的環境意義為何不同？", { choices: ["高空防紫外線近地污染", "兩者都只能作飲用水", "近地臭氧一定有益健康", "平流層臭氧造成噪音"], answer: 0 }],
+  ["授粉、水源涵養、碳吸存等通常可歸類為什麼？", { choices: ["生態系服務功能", "污染排放許可量", "環境影響替代案", "資源回收分類法"], answer: 0 }],
+  ["減碳策略中，為什麼通常強調先減量再抵換？", { choices: ["抵換品質與數量有限", "抵換可取代所有減量", "種樹能立即抵消全部", "排放越多越易淨零"], answer: 0 }],
+  ["都市大量不透水鋪面增加，常會造成什麼環境問題？", { choices: ["逕流熱島與淹水上升", "地下水補注一定變多", "雨水全被土壤吸收", "河川完全不受影響"], answer: 0 }],
+  ["只追求單一樹種造林，可能不利於哪一項？", { choices: ["生物多樣性與韌性", "木材顏色一致性", "苗木排列整齊度", "短期作業方便性"], answer: 0 }],
+  ["安全資料表 SDS 對環境與職安管理的用途是什麼？", { choices: ["提供危害處置防護資訊", "列出產品銷售排行", "預測未來用電尖峰", "記錄一般垃圾重量"], answer: 0 }],
+  ["指標物種被用來監測環境，是因為牠們通常具備什麼特性？", { choices: ["對環境變化有反應", "對污染完全不敏感", "只會出現在都市區", "不受棲地品質影響"], answer: 0 }],
+  ["生產者責任延伸制度 EPR 的精神是什麼？", { choices: ["負擔產品廢棄後責任", "禁止消費者進行回收", "產品越難回收越理想", "只管理商品廣告內容"], answer: 0 }],
+  ["面對氣候變遷，調適和減緩的差異是什麼？", { choices: ["調適降衝擊減緩降排放", "調適只計算碳排放量", "減緩只處理淹水風險", "兩者都只靠植樹完成"], answer: 0 }],
+  ["長期生態監測最重要的價值之一是什麼？", { choices: ["看出長期變化趨勢", "取代所有現地調查", "只記錄單次稀有事件", "讓管理不需再修正"], answer: 0 }],
+  ["相較於全混凝土河道，兼顧生態的河川整治通常會重視什麼？", { choices: ["棲地多樣與洪水安全", "完全拉直河道水流", "清除所有濱水植物", "只追求護岸一致外觀"], answer: 0 }],
+  ["環境議題中納入公民參與，主要能補足什麼？", { choices: ["在地經驗價值與監督", "取代所有科學評估", "讓決策不用公開資料", "保證意見完全一致"], answer: 0 }]
+]);
+
 const TIMER_SECONDS = 10 * 60;
 
 let currentLevel = "easy";
@@ -469,6 +532,7 @@ const choices = document.querySelector("#choices");
 const feedback = document.querySelector("#feedback");
 const feedbackResult = document.querySelector("#feedbackResult");
 const feedbackExplain = document.querySelector("#feedbackExplain");
+const questionHint = document.querySelector("#questionHint");
 const resultPanel = document.querySelector("#resultPanel");
 const resultTitle = document.querySelector("#resultTitle");
 const resultMessage = document.querySelector("#resultMessage");
@@ -492,15 +556,20 @@ function shuffle(items) {
 }
 
 function prepareQuestion(item) {
-  const choiceObjects = item.choices.map((text, index) => ({
+  const upgraded = choiceUpgrades.get(item.question);
+  const choices = upgraded?.choices || item.choices;
+  const answer = upgraded?.answer ?? item.answer;
+  const choiceObjects = choices.map((text, index) => ({
     text,
-    isCorrect: index === item.answer
+    isCorrect: index === answer
   }));
   const preparedChoices = shuffleToggle.checked ? shuffle(choiceObjects) : choiceObjects;
   return {
     ...item,
+    choices,
+    answer,
     preparedChoices,
-    correctText: item.choices[item.answer]
+    correctText: choices[answer]
   };
 }
 
@@ -577,6 +646,7 @@ function renderQuestion() {
   levelTag.textContent = isReviewMode ? "錯題複習" : levelNames[currentLevel];
   questionText.textContent = item.question;
   progressText.textContent = `第 ${currentIndex + 1} / ${sessionQuestions.length} 題`;
+  questionHint.textContent = `第 ${currentIndex + 1} 題，共 ${sessionQuestions.length} 題`;
   scoreText.textContent = `${score} 題`;
   progressFill.style.width = `${((currentIndex + 1) / sessionQuestions.length) * 100}%`;
   choices.replaceChildren();
@@ -627,8 +697,8 @@ function selectAnswer(choiceIndex) {
   scoreText.textContent = `${score} 題`;
   feedback.classList.add(isCorrect ? "correct-feedback" : "incorrect-feedback");
   feedbackResult.textContent = isCorrect
-    ? "太棒了！你抓到這題的環境關鍵。"
-    : "很好的嘗試！看完解析，下一題一定更穩。";
+    ? "答對了！太棒了，你抓到這題的環境關鍵。"
+    : `答錯了，但很接近！正確答案是「${item.correctText}」。`;
   feedbackExplain.textContent = item.explain;
   feedback.hidden = false;
   nextButton.disabled = false;
