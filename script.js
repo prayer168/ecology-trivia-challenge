@@ -555,7 +555,24 @@ function shuffle(items) {
   return result;
 }
 
-function prepareQuestion(item) {
+function buildAnswerSlots(total) {
+  const slots = Array.from({ length: total }, (_, index) => index % 4);
+  return shuffle(slots);
+}
+
+function placeCorrectChoice(choiceObjects, correctSlot) {
+  const correctChoice = choiceObjects.find((choice) => choice.isCorrect);
+  const distractors = shuffle(choiceObjects.filter((choice) => !choice.isCorrect));
+  const preparedChoices = [];
+
+  for (let index = 0; index < choiceObjects.length; index += 1) {
+    preparedChoices[index] = index === correctSlot ? correctChoice : distractors.pop();
+  }
+
+  return preparedChoices;
+}
+
+function prepareQuestion(item, correctSlot) {
   const upgraded = choiceUpgrades.get(item.question);
   const choices = upgraded?.choices || item.choices;
   const answer = upgraded?.answer ?? item.answer;
@@ -563,7 +580,7 @@ function prepareQuestion(item) {
     text,
     isCorrect: index === answer
   }));
-  const preparedChoices = shuffle(choiceObjects);
+  const preparedChoices = placeCorrectChoice(choiceObjects, correctSlot);
   return {
     ...item,
     choices,
@@ -577,7 +594,8 @@ function buildSessionQuestions() {
   const baseQuestions = getQuestions();
   if (shuffleToggle) shuffleToggle.checked = true;
   const ordered = shuffle(baseQuestions);
-  sessionQuestions = ordered.map(prepareQuestion);
+  const answerSlots = buildAnswerSlots(ordered.length);
+  sessionQuestions = ordered.map((item, index) => prepareQuestion(item, answerSlots[index]));
 }
 
 function formatTime(totalSeconds) {
