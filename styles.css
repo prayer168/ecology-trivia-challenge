@@ -338,12 +338,7 @@ h1 {
 
 .choice-number {
   flex: 0 0 auto;
-  display: inline-grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #e9f2dd;
+  min-width: 36px;
   color: #2c513a;
   font-weight: 900;
 }

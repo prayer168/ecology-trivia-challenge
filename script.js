@@ -963,7 +963,7 @@ function renderQuestion() {
     button.className = "choice-button";
     button.type = "button";
     number.className = "choice-number";
-    number.textContent = choiceIndex + 1;
+    number.textContent = `${choiceIndex + 1}、`;
     text.textContent = choice.text;
     button.append(number, text);
     button.addEventListener("click", () => selectAnswer(choiceIndex));
