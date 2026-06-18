@@ -719,6 +719,8 @@ const levelNames = {
   master: "出神入化"
 };
 
+const levelOrder = ["easy", "medium", "hard", "boss", "master"];
+
 const choiceUpgrades = new Map([
   ["下列哪一種行為最符合垃圾減量？", { choices: ["自備水壺和餐具", "改買小包裝商品", "先丟掉再回收", "只把垃圾壓扁"], answer: 0 }],
   ["下列哪一種屬於再生能源？", { choices: ["水力發電能源", "天然氣發電源", "高效率燃煤源", "石油提煉能源"], answer: 0 }],
@@ -802,6 +804,7 @@ const restartButton = document.querySelector("#restartButton");
 const tryAgainButton = document.querySelector("#tryAgainButton");
 const reviewWrongButton = document.querySelector("#reviewWrongButton");
 const resetWrongButton = document.querySelector("#resetWrongButton");
+const nextLevelButton = document.querySelector("#nextLevelButton");
 const nextButton = document.querySelector("#nextButton");
 const difficultyButtons = document.querySelectorAll(".difficulty-button");
 const shuffleToggle = document.querySelector("#shuffleToggle");
@@ -1071,6 +1074,19 @@ function renderWrongReview() {
   });
 }
 
+function getNextLevel() {
+  const currentLevelIndex = levelOrder.indexOf(currentLevel);
+  return levelOrder[currentLevelIndex + 1];
+}
+
+function updateResultActions() {
+  const nextLevel = getNextLevel();
+  reviewWrongButton.disabled = reviewPool.length === 0;
+  resetWrongButton.disabled = reviewPool.length === 0;
+  nextLevelButton.disabled = isReviewMode || !nextLevel;
+  nextLevelButton.textContent = nextLevel ? `進入下一關：${levelNames[nextLevel]}` : "已完成全部關卡";
+}
+
 function showResult(timeUp = false) {
   stopTimer();
   const total = sessionQuestions.length || getQuestions().length;
@@ -1099,6 +1115,7 @@ function showResult(timeUp = false) {
 
   renderTopicReport();
   renderWrongReview();
+  updateResultActions();
   resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -1118,6 +1135,13 @@ function setLevel(level) {
     button.classList.toggle("active", button.dataset.level === level);
   });
   restartQuiz(false);
+}
+
+function goNextLevel() {
+  const nextLevel = getNextLevel();
+  if (!nextLevel) return;
+  setLevel(nextLevel);
+  quizPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function restartQuiz(shouldScroll = true) {
@@ -1170,6 +1194,7 @@ restartButton.addEventListener("click", () => restartQuiz());
 tryAgainButton.addEventListener("click", () => restartQuiz());
 reviewWrongButton.addEventListener("click", startWrongReview);
 resetWrongButton.addEventListener("click", clearWrongReview);
+nextLevelButton.addEventListener("click", goNextLevel);
 nextButton.addEventListener("click", nextQuestion);
 shuffleToggle.addEventListener("change", () => restartQuiz(false));
 timerToggle.addEventListener("change", () => restartQuiz(false));
