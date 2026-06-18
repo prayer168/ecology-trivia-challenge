@@ -949,7 +949,7 @@ function renderQuestion() {
   feedback.classList.remove("correct-feedback", "incorrect-feedback");
   topicTag.textContent = item.topic;
   levelTag.textContent = isReviewMode ? "錯題複習" : levelNames[currentLevel];
-  questionText.textContent = item.question;
+  questionText.textContent = `第 ${currentIndex + 1} 題：${item.question}`;
   progressText.textContent = `第 ${currentIndex + 1} / ${sessionQuestions.length} 題`;
   questionHint.textContent = `第 ${currentIndex + 1} 題，共 ${sessionQuestions.length} 題`;
   scoreText.textContent = `${score} 題`;
