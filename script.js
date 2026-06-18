@@ -958,9 +958,14 @@ function renderQuestion() {
 
   item.preparedChoices.forEach((choice, choiceIndex) => {
     const button = document.createElement("button");
+    const number = document.createElement("span");
+    const text = document.createElement("span");
     button.className = "choice-button";
     button.type = "button";
-    button.textContent = choice.text;
+    number.className = "choice-number";
+    number.textContent = choiceIndex + 1;
+    text.textContent = choice.text;
+    button.append(number, text);
     button.addEventListener("click", () => selectAnswer(choiceIndex));
     choices.append(button);
   });
